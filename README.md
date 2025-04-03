@@ -1,15 +1,16 @@
-# 🇫🇷 Assistant Déclaration Fiscale 2025 – Clickimpôts
+# 🇫🇷 French Tax Assistant 2025 – Clickimpôts
 
-Un assistant intelligent pour extraire automatiquement les données fiscales des documents clients (PDF, Word, JSON) et générer un fichier Excel prêt à importer dans Clickimpôts.
+An intelligent assistant to automatically extract tax data from client documents (PDF, Word, JSON) and generate an Excel file ready to import into Clickimpôts.
 
-## 🔧 Fonctionnalités
-- Téléversement de documents PDF / Word / JSON
-- Extraction automatique avec GPT-4 (clé API requise)
-- Tableau éditable pour correction manuelle
-- Génération d’un fichier Excel structuré avec les formulaires :
+## 🔧 Features
+
+- Upload PDF / Word / JSON documents
+- Automatic extraction powered by GPT-4 (API key required)
+- Editable table for manual corrections
+- Generates a structured Excel file with tax forms:
   - 2042, 2044, 2047, 2086, 3916
 
-## 🚀 Lancer localement
+## 🚀 Run Locally
 
 ```bash
 pip install -r requirements.txt
