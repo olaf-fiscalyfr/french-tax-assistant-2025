@@ -1,5 +1,10 @@
 streamlit
 pandas
+openpyxl
+xlsxwriter
 PyPDF2
 python-docx
-openai
+pdfplumber
+pytesseract
+Pillow
+textract
