@@ -61,6 +61,18 @@ if uploaded_files:
                     raw = file_bytes.decode("latin-1")
                     st.warning(f"⚠️ {file.name} was decoded with fallback encoding (latin-1)")
 
+            elif suffix == ".docx":
+                try:
+                    doc = Document(file)
+                    raw = "\n".join([para.text for para in doc.paragraphs])
+                    st.success(f"📄 Word document loaded: {filename}")
+                except Exception as e:
+                    st.error(f"❌ Failed to read DOCX file: {filename}\n{e}")
+                    raw = ""
+
+    data_entries.append({"filename": filename, "text": raw})
+
+    
     data_entries.append({"filename": filename, "text": raw})
     st.success(f"📝 Text file loaded: {filename}")
 
