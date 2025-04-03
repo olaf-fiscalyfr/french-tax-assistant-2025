@@ -54,12 +54,15 @@ if uploaded_files:
                 st.success(f"📄 PDF loaded: {filename}")
 
             elif suffix in [".docx", ".txt"]:
-    file_bytes = file.read()
-    try:
-        raw = file_bytes.decode("utf-8")
-    except UnicodeDecodeError:
-        raw = file_bytes.decode("latin-1")
-        st.warning(f"⚠️ {file.name} was decoded with fallback encoding (latin-1)")
+                file_bytes = file.read()
+                try:
+                    raw = file_bytes.decode("utf-8")
+                except UnicodeDecodeError:
+                    raw = file_bytes.decode("latin-1")
+                    st.warning(f"⚠️ {file.name} was decoded with fallback encoding (latin-1)")
+
+    data_entries.append({"filename": filename, "text": raw})
+    st.success(f"📝 Text file loaded: {filename}")
 
     data_entries.append({"filename": filename, "text": raw})
     st.success(f"📝 Text file loaded: {filename}")
