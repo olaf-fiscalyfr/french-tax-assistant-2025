@@ -1,126 +1,109 @@
-# app.py
 import streamlit as st
 import pandas as pd
-import os
-import tempfile
 import json
-import io
+import time
 from pathlib import Path
-
-# Document parsing imports
-from PyPDF2 import PdfReader
-from docx import Document as DocxDocument
-import textract
 import pdfplumber
+from docx import Document
 from PIL import Image
-import pytesseract
+import io
 
 st.set_page_config(page_title="🇫🇷 French Tax Assistant 2025", layout="centered")
 
+# --- Sidebar instructions ---
+with st.sidebar:
+    st.title("📌 Instructions")
+    st.markdown("""
+    1. Upload your PDF, DOCX, TXT or JSON files  
+    2. The app extracts key data  
+    3. You review and download the Excel  
+    """)
+    st.markdown("---")
+    st.markdown("Made by Olaf @ Fiscalyfr")
+
+# --- Main header ---
 st.title("🇫🇷 French Tax Assistant 2025")
-st.markdown("Drop your tax documents to extract totals and generate a Clickimpôts-ready Excel file.")
+st.markdown("Upload tax docs and generate an Excel file for Clickimpôts.")
 
-uploaded_files = st.file_uploader("Upload files (PDF, DOCX, TXT, JSON, MSG, Excel)",
-                                   type=["pdf", "docx", "txt", "json", "msg", "xlsx"],
-                                   accept_multiple_files=True)
+# --- Upload section ---
+uploaded_files = st.file_uploader(
+    "📁 Drop your files here",
+    type=["pdf", "docx", "txt", "json"],
+    accept_multiple_files=True
+)
 
-extracted_texts = []
+data_entries = []
 
-# --- Utility functions ---
-def extract_text_from_pdfplumber(file):
-    text = ""
-    with pdfplumber.open(file) as pdf:
-        for page in pdf.pages:
-            text += page.extract_text() or ""
-    return text
-
-def extract_text_from_pdf(file):
-    try:
-        return extract_text_from_pdfplumber(file)
-    except:
-        try:
-            reader = PdfReader(file)
-            return "\n".join([p.extract_text() or "" for p in reader.pages])
-        except:
-            return ""
-
-def extract_text_from_docx(file):
-    try:
-        doc = DocxDocument(file)
-        return "\n".join([para.text for para in doc.paragraphs])
-    except:
-        return ""
-
-def extract_text_from_txt(file):
-    try:
-        return file.read().decode("utf-8")
-    except UnicodeDecodeError:
-        return file.read().decode("latin-1")
-
-def extract_text_from_ocr(file):
-    try:
-        image = Image.open(file)
-        return pytesseract.image_to_string(image)
-    except:
-        return ""
-
-def extract_text_with_textract(path):
-    try:
-        return textract.process(path).decode("utf-8")
-    except:
-        return ""
-
-# --- Extraction process ---
 if uploaded_files:
-    for file in uploaded_files:
-        filename = file.name
-        suffix = Path(filename).suffix.lower()
-        raw_text = ""
+    with st.spinner("🔍 Analyzing documents..."):
+        time.sleep(1)
 
-        with tempfile.NamedTemporaryFile(delete=False, suffix=suffix) as tmp_file:
-            tmp_file.write(file.read())
-            tmp_path = tmp_file.name
+        for file in uploaded_files:
+            filename = file.name
+            suffix = Path(filename).suffix.lower()
+            raw_text = ""
 
-        if suffix == ".pdf":
-            raw_text = extract_text_from_pdf(tmp_path)
-        elif suffix == ".docx":
-            raw_text = extract_text_from_docx(tmp_path)
-        elif suffix == ".txt":
-            raw_text = extract_text_from_txt(file)
-        elif suffix == ".json":
-            with open(tmp_path, "r") as jf:
-                json_obj = json.load(jf)
-                raw_text = json.dumps(json_obj, indent=2)
-        elif suffix in [".msg", ".eml"]:
-            raw_text = extract_text_with_textract(tmp_path)
-        elif suffix in [".jpg", ".jpeg", ".png"]:
-            raw_text = extract_text_from_ocr(tmp_path)
-        elif suffix in [".xls", ".xlsx"]:
-            df = pd.read_excel(tmp_path)
-            raw_text = df.to_string()
+            if suffix == ".pdf":
+                try:
+                    with pdfplumber.open(file) as pdf:
+                        raw_text = "\n".join(page.extract_text() or "" for page in pdf.pages)
+                    st.success(f"📄 PDF loaded: {filename}")
+                except Exception as e:
+                    st.error(f"❌ Could not read PDF: {filename}\n{e}")
 
-        extracted_texts.append({"filename": filename, "text": raw_text})
+            elif suffix == ".docx":
+                try:
+                    doc = Document(file)
+                    raw_text = "\n".join([para.text for para in doc.paragraphs])
+                    st.success(f"📃 Word document loaded: {filename}")
+                except Exception as e:
+                    st.error(f"❌ Could not read DOCX: {filename}\n{e}")
 
-    st.markdown("## 📊 Extracted Document Previews")
-    for entry in extracted_texts:
+            elif suffix == ".txt":
+                try:
+                    raw_text = file.read().decode("utf-8")
+                except UnicodeDecodeError:
+                    raw_text = file.read().decode("latin-1")
+                    st.warning(f"⚠️ {filename} was decoded with fallback encoding (latin-1)")
+                st.success(f"📝 Text file loaded: {filename}")
+
+            elif suffix == ".json":
+                try:
+                    json_data = json.load(file)
+                    raw_text = json.dumps(json_data, indent=2)
+                    st.success(f"🧠 JSON file loaded: {filename}")
+                except Exception as e:
+                    st.error(f"❌ Could not read JSON: {filename}\n{e}")
+
+            if raw_text:
+                data_entries.append({"filename": filename, "text": raw_text})
+
+    # --- Preview text ---
+    st.markdown("### 📑 Preview extracted content")
+    for entry in data_entries:
         st.subheader(entry["filename"])
-        st.text(entry["text"][:1000])
+        st.text(entry["text"][:1000])  # show first 1000 chars
 
-    # --- Simulated totals (to be replaced by GPT-based analysis) ---
-    df_out = pd.DataFrame([
-        {"Formulaire": "2042", "Case": "1AJ", "Montant": 12000},
-        {"Formulaire": "2047", "Case": "8TK", "Montant": 5500},
-        {"Formulaire": "2086", "Case": "3VG", "Montant": 3100},
+    # --- Generate Excel mock ---
+    df = pd.DataFrame([
+        {
+            "Fichier": e["filename"],
+            "Type": Path(e["filename"]).suffix.upper(),
+            "Montant estimé": "à extraire"
+        }
+        for e in data_entries
     ])
-
     output = io.BytesIO()
     with pd.ExcelWriter(output, engine='xlsxwriter') as writer:
-        df_out.to_excel(writer, index=False, sheet_name="2042")
+        df.to_excel(writer, index=False, sheet_name="2042")
     output.seek(0)
 
     st.download_button(
-        label="📅 Download Clickimpôts Excel",
+        label="📥 Télécharger le fichier Excel",
         data=output,
         file_name="declaration_clickimpots_2025.xlsx",
         mime="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
     )
+
+else:
+    st.info("⬆️ Upload a file to get started.")
