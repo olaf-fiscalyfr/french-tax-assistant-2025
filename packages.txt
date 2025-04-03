@@ -7,4 +7,3 @@ python-docx
 pdfplumber
 pytesseract
 Pillow
-six>=1.16.0
