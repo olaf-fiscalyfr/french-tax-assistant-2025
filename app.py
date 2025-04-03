@@ -3,8 +3,7 @@ import pandas as pd
 import json
 import time
 from PyPDF2 import PdfReader
-<<<<<<< HEAD
-=======
+
 from docx import Document
 >>>>>>> a06ba87f1f10134ab3c57fb44e2961897e6278f9
 from pathlib import Path
