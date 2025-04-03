@@ -1,10 +1,5 @@
-streamlit
-pandas
-openpyxl
-xlsxwriter
-PyPDF2
-python-docx
-pdfplumber
-pytesseract
-Pillow
-six>=1.16.0
+poppler-utils
+libgl1
+tesseract-ocr
+tesseract-ocr-eng
+tesseract-ocr-fra
