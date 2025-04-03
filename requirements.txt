@@ -7,4 +7,4 @@ python-docx
 pdfplumber
 pytesseract
 Pillow
-textract==1.6.5
+six>=1.16.0
