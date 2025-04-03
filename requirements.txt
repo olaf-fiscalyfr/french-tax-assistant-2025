@@ -3,4 +3,4 @@ pandas
 PyPDF2
 openai
 xlsxwriter
-echo "python-docx" >> requirements.txt
+python-docx
