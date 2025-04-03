@@ -1,9 +1,5 @@
-streamlit==1.30.0
-pandas==1.3.3
+streamlit
+pandas
 PyPDF2
-openai
-xlsxwriterpython-docx
-openai
-xlsxwriter
 python-docx
-a06ba87f1f10134ab3c57fb44e2961897e6278f9
+openai
