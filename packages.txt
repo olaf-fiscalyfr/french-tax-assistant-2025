@@ -6,3 +6,4 @@ unrtf
 tesseract-ocr
 tesseract-ocr-fra
 tesseract-ocr-eng
+six>=1.16.0
