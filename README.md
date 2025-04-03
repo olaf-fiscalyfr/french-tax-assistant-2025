@@ -14,10 +14,3 @@ Un assistant intelligent pour extraire automatiquement les données fiscales des
 ```bash
 pip install -r requirements.txt
 streamlit run app.py
-```
-
-## 🔑 Configuration
-Ajouter votre clé API OpenAI pour activer l’analyse automatisée GPT.
-
-## 📤 Export
-Un fichier Excel `declaration_clickimpots_2025.xlsx` est généré, prêt à être importé dans Clickimpôts.
