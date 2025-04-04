@@ -8,7 +8,7 @@ pdfplumber
 pytesseract
 Pillow
 six>=1.16.0
-openpyxl
+openai>=1.0.0
 extract-msg
 mailparser
-xlsxwriter
+python-dotenv
